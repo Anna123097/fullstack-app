@@ -1,5 +1,6 @@
 const { readFileSync } = require("fs")
 const { createServer } = require("http")
+const { Server } = require("ws")
 
 const server = createServer(handleRequest)
 
@@ -11,6 +12,24 @@ const js = readFileSync("script.js")
 let text = ""
 
 server.listen(1344, () => console.log("server started at http://localhost:1344"))
+
+const wss = new Server({ port: 1455 })
+
+wss.on("connection", handleConnection)
+
+function handleConnection(ws){
+  console.log("client connected")
+
+  ws.send("hello from server")
+
+  ws.on("message", (message)=>{
+    console.log(message.toString())
+  })
+
+  ws.on("close", ()=>{
+    console.log("client disconnected")
+  })
+}
 
 function handleRequest(request, response) {
   if (request.url == "/" || request.url == "/index.html") {
