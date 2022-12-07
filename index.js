@@ -18,16 +18,10 @@ const wss = new Server({ port: 1455 })
 wss.on("connection", handleConnection)
 
 function handleConnection(ws){
-  console.log("client connected")
-
   ws.send("hello from server")
 
   ws.on("message", (message)=>{
     console.log(message.toString())
-  })
-
-  ws.on("close", ()=>{
-    console.log("client disconnected")
   })
 }
 
