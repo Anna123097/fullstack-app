@@ -2,7 +2,7 @@ const textarea = document.getElementById("textarea")
 
 textarea.addEventListener("input", handleChange)
 
-const ws = new WebSocket ("ws://localhost:9876")
+const ws = new WebSocket ("ws://localhost:1344")
 
 
 

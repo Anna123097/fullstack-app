@@ -17,7 +17,7 @@ const js = readFileSync("script.js")
 
 let text = ""
 
-const wss = new Server({ port: wsPort })
+const wss = new Server({ noServer: true })
 
 wss.on("connection", ws => {
   ws.onmessage = msg => wsConnections.filter(wsc => wsc != ws).forEach(wsc => wsc.send(text = msg.data))
@@ -26,7 +26,14 @@ wss.on("connection", ws => {
 })
 
 wss.on("listening", () => {
-  server.listen(httpPort, () => console.log("http://localhost:" + httpPort))
+})
+
+server.listen(httpPort, () => console.log("http://localhost:" + httpPort))
+
+server.on("upgrade", (request, socket, head)=>{
+  wss.handleUpgrade(request, socket, head, ws=>{
+    wss.emit("connection", ws, request)
+  })
 })
 
 function handleRequest(request, response) {
