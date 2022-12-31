@@ -2,13 +2,10 @@ const { readFileSync } = require("fs")
 const { createServer } = require("http")
 const { Server } = require("ws")
 
-const httpPort = 1344
-const wsPort = 9876 
-
-const server = createServer(handleRequest)
-
+const httpPort = process.env.PORT || 1344
 const wsConnections = []
-global.wsConnections = wsConnections
+const server = createServer(handleRequest)
+const wss = new Server({ noServer: true })
 
 const html = readFileSync("index.html").toString()
 const css = readFileSync("style.css")
@@ -17,22 +14,13 @@ const js = readFileSync("script.js")
 
 let text = ""
 
-const wss = new Server({ noServer: true })
-
-wss.on("connection", ws => {
-  ws.onmessage = msg => wsConnections.filter(wsc => wsc != ws).forEach(wsc => wsc.send(text = msg.data))
-  wsConnections.push(ws)
-  ws.onclose = () => wsConnections.splice(wsConnections.indexOf(ws), 1)
-})
-
-wss.on("listening", () => {
-})
-
 server.listen(httpPort, () => console.log("http://localhost:" + httpPort))
 
-server.on("upgrade", (request, socket, head)=>{
-  wss.handleUpgrade(request, socket, head, ws=>{
-    wss.emit("connection", ws, request)
+server.on("upgrade", (request, socket, head) => {
+  wss.handleUpgrade(request, socket, head, ws => {
+    ws.onclose = () => wsConnections.splice(wsConnections.indexOf(ws), 1)
+    ws.onmessage = msg => wsConnections.filter(wsc => wsc != ws).forEach(wsc => wsc.send(text = msg.data))
+    wsConnections.push(ws)
   })
 })
 
@@ -63,7 +51,6 @@ function handleRequest(request, response) {
   }
   console.log(request, text)
 }
-
 
 function getBody(stream) {
   const chunks = []
