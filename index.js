@@ -7,10 +7,10 @@ const wsConnections = []
 const server = createServer(handleRequest)
 const wss = new Server({ noServer: true })
 
-const html = readFileSync("index.html").toString()
+const html = readFileSync("index.html", 'utf8')
 const css = readFileSync("style.css")
 const ico = readFileSync("favicon.ico")
-const js = readFileSync("script.js")
+const js = readFileSync("script.js", 'utf8')
 
 let text = ""
 
@@ -44,7 +44,7 @@ function handleRequest(request, response) {
     response.end(ico)
   }
   else if (request.url == "/script.js") {
-    response.end(js)
+    response.end(js.replace('{httpPort}', httpPort))
   }
   else {
     response.end("error")
