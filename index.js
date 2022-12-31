@@ -49,7 +49,7 @@ function handleRequest(request, response) {
   else {
     response.end("error")
   }
-  console.log(request, text)
+  
 }
 
 function getBody(stream) {
