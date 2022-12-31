@@ -18,5 +18,7 @@
     "url": "https://github.com/Anna123097/fullstack-app/issues"
   },
   "homepage": "https://github.com/Anna123097/fullstack-app#readme",
-
+  "dependencies": {
+    "ws": "^8.11.0"
+  }
 }

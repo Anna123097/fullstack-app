@@ -1,8 +1,14 @@
 const { readFileSync } = require("fs")
 const { createServer } = require("http")
+const { Server } = require("ws")
 
+const httpPort = 1344
+const wsPort = 9876 && 1344
 
 const server = createServer(handleRequest)
+
+const wsConnections = []
+global.wsConnections = wsConnections
 
 const html = readFileSync("index.html").toString()
 const css = readFileSync("style.css")
@@ -11,9 +17,17 @@ const js = readFileSync("script.js")
 
 let text = ""
 
+const wss = new Server({ port: wsPort })
 
+wss.on("connection", ws => {
+  ws.onmessage = msg => wsConnections.filter(wsc => wsc != ws).forEach(wsc => wsc.send(text = msg.data))
+  wsConnections.push(ws)
+  ws.onclose = () => wsConnections.splice(wsConnections.indexOf(ws), 1)
+})
 
-server.listen(1344, () => console.log("server started at http://localhost:1344"))
+wss.on("listening", () => {
+  server.listen(httpPort, () => console.log("http://localhost:" + httpPort))
+})
 
 function handleRequest(request, response) {
   if (request.url == "/" || request.url == "/index.html") {
