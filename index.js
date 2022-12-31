@@ -3,7 +3,7 @@ const { createServer } = require("http")
 const { Server } = require("ws")
 
 const httpPort = 1344
-const wsPort = 9876 && 1344
+const wsPort = 9876 
 
 const server = createServer(handleRequest)
 
