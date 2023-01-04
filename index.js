@@ -44,7 +44,7 @@ function handleRequest(request, response) {
     response.end(ico)
   }
   else if (request.url == "/script.js") {
-    response.end(js.replace('1344', httpPort))
+    response.end(js)
   }
   else {
     response.end("error")
